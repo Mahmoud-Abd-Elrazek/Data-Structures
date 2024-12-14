@@ -37,6 +37,7 @@ This repository features a comprehensive collection of core data structures, imp
     - Common operations: insertion, deletion, traversal (pre-order, in-order, post-order, level-order), and searching
 
 2. **Graph**
+    - Edg List
     - Adjacency Matrix
     - Adjacency List
     - Common operations: insertion, deletion, traversal (pre-order, in-order, post-order, level-order), and searching
