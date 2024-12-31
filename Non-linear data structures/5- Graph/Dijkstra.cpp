@@ -2,70 +2,80 @@
 
 // © M_Abrazeg
 
-// problem link: https://cses.fi/problemset/task/1671
-
 #include <bits/stdc++.h>
 using namespace std;
 using i64 = long long;
 const int INF = 0x3f3f3f3f, N = 1000000;
 
-static int speedUp=[](){
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-   #ifndef ONLINE_JUDGE
-      freopen("input.txt", "r", stdin);
-      //freopen("output.txt", "w", stdout);
-   #endif
-return 0;
-}();
+void addEdge(vector<pair<int, int>> adj[], int u, int v, int wt) {
+    adj[u].push_back({v, wt});
+    adj[v].push_back({u, wt});
+}
 
-vector<pair<i64,i64>> adjList[N];
-bool visited[N];
-i64 dis[N];
-int n , m;
-// Dijkstra algorithm
-void Dijkstra(int start) { 
+vector<int> Dijkstra(vector<pair<int, int>> adj[], int s, int sz) {
 
-    // cost , node
-    priority_queue< pair<i64,i64>, vector<pair<i64,i64>> , greater<pair<i64,i64>> > pq;
-    
-    pq.push({0,start});
+    vector<int> dis(sz, INT_MAX);
+    dis[s] = 0;
 
-    while (!pq.empty()) { 
-        pair<i64,i64> p = pq.top();
+    priority_queue < pair<int,int> , vector<pair<int,int>> , greater<pair<int,int>> > pq;
+    pq.push({0 , s});
+
+
+    while (pq.empty() == false) {
+
+        pair<int,int> top = pq.top();
         pq.pop();
 
-        i64 node = p.second , cost = p.first;
+        int from = top.second , cost = top.first;    
+        
+        if (dis[from] != cost)
+            continue;
 
-        if (visited[node] == true) continue;
-
-        visited[node] = true;
-        dis[node] = cost;
-
-        for (auto& it : adjList[node]) { 
-            i64 a = it.first , b = it.second;
-            if (!visited[a]) 
-            pq.push({ cost + b , a});
-        } // end children
-    } // end algorithm
-
-}
-int main () {
-
-    cin >> n >> m;
-    for (int i = 1 ; i <= m ; ++i) { 
-      int u , v , c; // u, v, cost
-      cin >> u >> v >> c;
-
-      adjList[u].push_back({v,c});
+        for (auto to : adj[from])
+        {
+            int weight = to.second;
+            if (dis[from] + weight < dis[to.first]) {
+                dis[to.first] = dis[from] + weight;
+                pq.push({dis[to.first] , to.first});
+            }
+        }
     }
 
-    int start = 1;
-    Dijkstra (start);
+    return dis;
+}
 
-    for (int i = 1 ; i <= n;++i) 
-        cout << dis[i] << " " ;
+int main() {
 
-    cout << "\n";
-   return 0;
+    int N , M;
+    cin >> N >> M;
+    vector<pair<int, int>> adj[N];
+    
+    int u, v, wt;
+    for (int i = 0; i < M; i++)
+    {
+        cin >> u >> v >> wt;
+        addEdge(adj, u, v, wt);
+    }
+    
+    auto printGraph = [&] () -> void {
+        
+        for (int node = 0 ; node < N ; ++node) {
+            cout << node << " { ";
+        
+            auto children = adj[node];
+            for(auto& ch : children)
+                cout << "(" << ch.first << " " << ch.second << ") ";
+            
+            cout << "}\n";
+        }
+        
+    };
+    cout << "============\n";
+
+    auto dis = Dijkstra(adj , 0 , N);
+    cout << "Output\n";
+    for (int i = 0; i < N; i++)
+        cout << i << ' ' << dis[i] << endl;
+
+    return 0;
 }
